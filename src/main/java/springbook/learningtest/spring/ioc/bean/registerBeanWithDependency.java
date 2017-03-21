@@ -7,7 +7,11 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 public class registerBeanWithDependency {
@@ -35,4 +39,65 @@ public class registerBeanWithDependency {
 		
 		assertThat(ac.getBeanFactory().getBeanDefinitionCount(), is(2));
 	}
+	
+	@Test
+	public void registerBean() { 
+		StaticApplicationContext ac = new StaticApplicationContext();
+		ac.registerBeanDefinition("printer", new RootBeanDefinition(StringPrinter.class));
+		
+		
+		// 프로퍼티 주입을 위해 사용
+		BeanDefinition helloDef = new RootBeanDefinition(Hello.class);
+		helloDef.getPropertyValues().addPropertyValue("name", "Spring");
+		// DI 
+		helloDef.getPropertyValues().addPropertyValue("printer", new RuntimeBeanReference("printer"));
+		ac.registerBeanDefinition("hello", helloDef);
+		
+		Hello hello = ac.getBean("hello", Hello.class);
+		hello.print();
+		
+		assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+	}
+	
+	@Test
+	public void genericApplicationContext() {
+		GenericApplicationContext ac = new GenericApplicationContext();
+		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(ac);
+		reader.loadBeanDefinitions("springbook/learningtest/spring/ioc/bean/ApplicationContext.xml");
+		ac.refresh();		// app 컨테이너 초기화 명령
+		
+		Hello hello = ac.getBean("hello", Hello.class);
+		hello.print();
+		
+		assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+				
+	}
+	
+	@Test
+	public void genericXmlApplicationContext() {
+		GenericXmlApplicationContext ac = new GenericXmlApplicationContext("springbook/learningtest/spring/ioc/bean/ApplicationContext.xml");
+		Hello hello = ac.getBean("hello", Hello.class);
+		hello.print();
+		
+		assertThat(ac.getBean("printer").toString(), is("Hello Spring"));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
