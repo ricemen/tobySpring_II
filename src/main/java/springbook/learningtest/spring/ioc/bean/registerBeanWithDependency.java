@@ -3,6 +3,7 @@ package springbook.learningtest.spring.ioc.bean;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -84,8 +87,27 @@ public class registerBeanWithDependency {
 	
 	
 	
+	@Test
+	public void simpleBeanScanning() {
+		ApplicationContext ctx = new AnnotationConfigApplicationContext("springbook.learningtest.spring.ioc.bean");
+		annotatedHello hello = ctx.getBean("myAnn", annotatedHello.class);
+		
+		assertThat(hello, is(notNullValue()));
+		
+	}
 	
-	
+	@Test 
+	public void sourceBeanTest() {
+		ApplicationContext ctx = new AnnotationConfigApplicationContext(AnnotatedHelloConfig.class);
+		annotatedHello hello = ctx.getBean("annotatedHello", annotatedHello.class);
+		
+		assertThat(hello, is(notNullValue()));
+		
+		AnnotatedHelloConfig config = ctx.getBean("annotatedHelloConfig", AnnotatedHelloConfig.class);
+		assertThat(config, is(notNullValue()));
+		
+		assertThat(config.annotatedHello(), is(not(sameInstance(hello))));
+	}
 	
 	
 	
