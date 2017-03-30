@@ -17,7 +17,7 @@ public class BeanDefinitionUtils {
 		List<List<String>> roleBeanInfos = new ArrayList<List<String>>();
 		roleBeanInfos.add(new ArrayList<>());
 		roleBeanInfos.add(new ArrayList<>());
-		roleBeanInfos.add(new ArrayList<>());
+		roleBeanInfos.add(new ArrayList<>()); 
 		
 		for(String name : ac.getBeanDefinitionNames()) {
 			int role = ((GenericApplicationContext) ac).getBeanDefinition(name).getRole();
